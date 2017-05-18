@@ -1,0 +1,241 @@
+<html>
+<meta charset="UTF-8"> 
+<head>
+Grid Game //
+Sahar Mohamed-Ali
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<style>
+
+
+body {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-weight: 100;
+  font-size: 12px;
+  line-height: 30px;
+  color: #777;
+  background: #ffcce0;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+#startWindow, #gameWindow {
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#startWindow {
+	width: 700px;
+    height: 400px;
+	background: #ff66a3;
+}
+
+#gameWindow{
+	width: 500px;
+  height: 500px;
+	display: none;
+}
+
+#startButton {
+  height: 100px;
+  width: 200px;
+  left: 50%;
+  top: 50%;
+  margin-top: -50px;   
+  margin-left: -100px; 
+  position: fixed;
+  background: #ff1a75;
+  color: white;
+  border-style: solid;
+  border-color: white;
+
+}
+
+#timer {
+  height: 30px;
+  width: 100px;
+  background: #ff1a75;
+  color: white;
+  margin: auto;
+  border-style: solid;
+  border-color: white;
+  display: none;
+}
+
+</style>
+
+
+<body onLoad="getCookie()">
+<div id="startWindow"> 
+<button id="startButton">Start</button>
+</div>
+
+<div id="gameWindow">
+	<div id="container">
+	</div>
+</div>
+
+<table id="timer"> </div>
+<br>
+<span> High Score: </span> <span id="highScore"> </span> 
+<script>
+
+var firstChoice = null;
+var secondChoice = null;
+
+var startWindow = document.getElementById("startWindow");
+var startButton = document.getElementById("startButton");
+var gameWindow = document.getElementById("gameWindow");
+var timer = document.getElementById("timer");
+var highScore = document.getElementById("highScore");
+
+var colors = ["#b3d1ff","#ff6666","#fff0b3", "#b3ffb3", "#ffd9b3", "#ecb3ff", "#ff8080", "#ff80b3", "#cccccc", "#b3d1ff","#ff6666","#fff0b3", "#b3ffb3", "#ffd9b3", "#ecb3ff", 
+"#ff8080", "#ff80b3", "#cccccc", "#b3d1ff","#ff6666","#fff0b3", "#b3ffb3", "#ffd9b3", "#ecb3ff", "#ff8080", "#ff80b3", "#cccccc", "#b3d1ff","#ff6666","#fff0b3", "#b3ffb3", 
+"#ffd9b3", "#ecb3ff", "#ff8080", "#ff80b3", "#cccccc"];    
+var m = 0;
+var wins = 0;
+var startTime;
+var insertText = document.getElementById("timer");
+shuffle(colors);
+startButton.onclick = startGame;
+
+function startGame(){
+	startWindow.style.display = "none";
+	gameWindow.style.display = "inline";
+	startTime = new Date();
+    setTimeout(display, 1000);
+    timer.style.display = "block";
+    createGrid();
+}
+
+
+function display() {
+    var endTime = new Date();
+    var timeDiff = endTime - startTime;
+    timeDiff /= 1000;
+    var seconds = Math.round(timeDiff % 60);
+    timeDiff = Math.floor(timeDiff / 60);
+    var minutes = Math.round(timeDiff % 60);
+    timeDiff = Math.floor(timeDiff / 60);
+    var hours = Math.round(timeDiff % 24);
+        insertText.innerHTML = seconds;
+    setTimeout(display, 1000);
+}
+
+function createGrid(){
+for(var i = 0; i < 6; i++) { 
+    var row = document.createElement("tr");
+    for(var j = 0; j< 6; j++) {
+
+        var cell = document.createElement("td");
+        cell.style.width = "80px";
+        cell.style.height = "80px";  
+        cell.style.background = colors[m];
+        cell.setAttribute("onClick", "setBorder(this);");
+        m = m + 1;
+        cell.style.display = "inline-block"
+
+        row.appendChild(cell);
+    }                                                                                                                                                                                                                                                                                                                                                                                                    
+    document.getElementById("container").appendChild(row);
+}
+}
+
+function setBorder(cell){
+  if(firstChoice == null){
+    firstChoice = cell;
+    firstChoice.style.border = "solid 0.02px white";
+  }
+  else{
+    secondChoice = cell;
+    checkSame();
+    checkWins();
+   
+}
+}
+
+function checkSame(){
+  //Can't match with itself
+  if(secondChoice ===  firstChoice){
+    reset();
+  }
+  else if (secondChoice.style.background == firstChoice.style.background){
+     secondChoice.style.background = "black";
+     firstChoice.style.background = "black";
+     wins = wins + 1;
+     reset();
+  }
+  else{ 
+   reset();
+  }
+}
+
+function reset(){
+   firstChoice.style.border = "none";
+    firstChoice = null;
+    secondChoice = null;
+}
+
+
+function shuffle(array) {
+  var i = 0
+    , j = 0
+    , temp = null
+
+  for (i = array.length - 1; i > 0; i -= 1) {
+    j = Math.floor(Math.random() * (i + 1))
+    temp = array[i]
+    array[i] = array[j]
+    array[j] = temp
+  }
+}
+
+
+function checkWins(){
+  if(wins == 18){
+     setCookie();
+    alert("You Win! Your winning time is: " + timer.innerHTML);
+    timer.style.display = "none";
+    $("#gameWindow").hide("slow");
+        
+  
+}
+}
+
+function getCookie() {
+  highScore.innerHTML = document.cookie;
+           
+}
+
+//works
+function setCookie() {
+    document.cookie = timer.innerHTML;
+    alert(document.cookie)
+}
+
+function checkCookie() {
+    var history = document.cookie;
+    if (history = NaN){
+    setCookie();
+    }
+    else if (parseInt(history) > parseInt(timer.innerHTML)){
+        alert("You've bet your high score!");
+        setCookie();
+      }
+      else{
+        alert("You have not bet your high score");
+      }
+
+    }
+
+
+</script>
+</body>
+</html>
